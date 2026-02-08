@@ -1,3 +1,11 @@
+-- Framework Detection
+local FrameworkName = nil
+if GetResourceState('qbx_core') == 'started' then
+    FrameworkName = 'qbox'
+elseif GetResourceState('qb-core') == 'started' then
+    FrameworkName = 'qbcore'
+end
+
 function GetPlayerHeading()
     local heading = GetEntityHeading(cache.ped)
 
@@ -14,19 +22,41 @@ end
 
 function GetPlayerGender()
     local gender = locale('male')
-    if QBCore.Functions.GetPlayerData().charinfo.gender == 1 then
+    local playerData
+    
+    if FrameworkName == 'qbox' then
+        playerData = exports.qbx_core:GetPlayerData()
+    else
+        playerData = exports['qb-core']:GetCoreObject().Functions.GetPlayerData()
+    end
+    
+    if playerData.charinfo.gender == 1 then
         gender = locale('female')
     end
     return gender
 end
-
-function GetIsHandcuffed()
-    return QBCore.Functions.GetPlayerData()?.metadata?.ishandcuffed
+    local playerData
+    
+    if FrameworkName == 'qbox' then
+        playerData = exports.qbx_core:GetPlayerData()
+    else
+        playerData = exports['qb-core']:GetCoreObject().Functions.GetPlayerData()
+    end
+    
+    return playerData?.metadata?.ishandcuffed
 end
 
 function IsOnDuty()
     if Config.OnDutyOnly then
-        if QBCore.Functions.GetPlayerData().job.onduty then
+        local playerData
+        
+        if FrameworkName == 'qbox' then
+            playerData = exports.qbx_core:GetPlayerData()
+        else
+            playerData = exports['qb-core']:GetCoreObject().Functions.GetPlayerData()
+        end
+        
+        if playerData.job.onduty then
             return true
         else
             return false
@@ -38,7 +68,15 @@ end
 ---@return boolean
 local function HasPhone()
     for _, item in ipairs(Config.PhoneItems) do
-        if QBCore.Functions.HasItem(item) then
+        local hasItem = false
+        
+        if FrameworkName == 'qbox' then
+            hasItem = exports.ox_inventory:Search('count', item) > 0
+        else
+            hasItem = exports['qb-core']:GetCoreObject().Functions.HasItem(item)
+        end
+        
+        if hasItem then
             return true
         end
     end
@@ -146,7 +184,10 @@ function IsCallAllowed(message)
 
     if msgLength == 0 then return false end
     if GetIsHandcuffed() then return false end
-    if Config.PhoneRequired and not HasPhone() then QBCore.Functions.Notify('You need a communications device for this.', 'error', 5000) return false end
+    if Config.PhoneRequired and not HasPhone() then 
+        lib.notify({ description = 'You need a communications device for this.', type = 'error', duration = 5000 })
+        return false 
+    end
 
     return true
 end

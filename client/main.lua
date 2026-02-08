@@ -1,4 +1,15 @@
-QBCore = exports['qb-core']:GetCoreObject()
+-- Framework Detection
+local Framework = nil
+local FrameworkName = nil
+
+if GetResourceState('qbx_core') == 'started' then
+    Framework = exports.qbx_core
+    FrameworkName = 'qbox'
+elseif GetResourceState('qb-core') == 'started' then
+    Framework = exports['qb-core']:GetCoreObject()
+    FrameworkName = 'qbcore'
+end
+
 PlayerData = {}
 inHuntingZone, inNoDispatchZone = false, false
 local huntingZones, nodispatchZones, huntingBlips = {} , {}, {}
@@ -90,7 +101,13 @@ local function createZones()
 end
 
 local function setupDispatch()
-    local playerInfo = QBCore.Functions.GetPlayerData()
+    local playerInfo
+    if FrameworkName == 'qbox' then
+        playerInfo = Framework:GetPlayerData()
+    else
+        playerInfo = Framework.Functions.GetPlayerData()
+    end
+    
     local locales = lib.getLocales()
     PlayerData = {
         charinfo = {
@@ -317,12 +334,19 @@ RegisterNetEvent('ps-dispatch:client:openMenu', function(data)
 end)
 
 -- EventHandlers
-RegisterNetEvent("QBCore:Client:OnJobUpdate", setupDispatch)
-
-AddEventHandler('QBCore:Client:OnPlayerLoaded', function()
-    setupDispatch()
-    createZones()
-end)
+if FrameworkName == 'qbox' then
+    AddEventHandler('QBCore:Client:OnJobUpdate', setupDispatch)
+    AddEventHandler('QBCore:Client:OnPlayerLoaded', function()
+        setupDispatch()
+        createZones()
+    end)
+else
+    RegisterNetEvent("QBCore:Client:OnJobUpdate", setupDispatch)
+    AddEventHandler('QBCore:Client:OnPlayerLoaded', function()
+        setupDispatch()
+        createZones()
+    end)
+end
 
 AddEventHandler('QBCore:Client:OnPlayerUnload', removeZones)
 

@@ -1,18 +1,17 @@
 # PS Dispatch
 
-Integrated with [ps-mdt](https://github.com/Project-Sloth/ps-mdt)
+Standalone dispatch system for QBCore and QBox
 
 For all support questions, ask in our [Discord](https://www.discord.gg/projectsloth) support chat. 
 Do not create issues on GitHub if you need help. Issues are for bug reporting and new features only.
 
 # Depedency
-1. [qb-core](https://github.com/qbcore-framework/qb-core)
+1. [qb-core](https://github.com/qbcore-framework/qb-core) or [qbx_core](https://github.com/Qbox-project/qbx_core)
 2. [ox_lib](https://github.com/overextended/ox_lib)
-3. [ps-mdt](https://github.com/Project-Sloth/ps-mdt) - Optional but highly recommended.
 
 # Installation
 * Download ZIP
-* Make sure your [qb-core](https://github.com/qbcore-framework/qb-core) is fully updated to the latest version.
+* Make sure your framework (QBCore or QBox) is fully updated to the latest version.
 * Drag and drop resource into your server files
 * Start resource through server.cfg
 * Drag and drop sounds folder into interact-sound\client\html\sounds
